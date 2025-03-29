@@ -68,7 +68,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit }) => {
           {getDeadlineDisplay()}
           
           {task.completed && (
-            <Badge variant="success" className="bg-epic-green text-white">
+            <Badge variant="default" className="bg-epic-green text-white">
               <CheckCircle2 className="h-3 w-3 mr-1" />
               Completed
             </Badge>

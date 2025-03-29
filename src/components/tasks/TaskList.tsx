@@ -47,7 +47,15 @@ const TaskList: React.FC = () => {
     }
   });
   
-  const handleAddTask = (taskData: Omit<Task, 'id' | 'completed' | 'createdAt' | 'completedAt' | 'userId'>) => {
+  const handleAddTask = (values: { title?: string; description?: string; deadline?: Date; xpReward?: number }) => {
+    // Convert Date to ISO string for the API
+    const taskData: Omit<Task, 'id' | 'completed' | 'createdAt' | 'completedAt' | 'userId'> = {
+      title: values.title || '',
+      description: values.description || '',
+      deadline: values.deadline ? values.deadline.toISOString() : null,
+      xpReward: values.xpReward || 10
+    };
+    
     addTask(taskData);
     setShowAddDialog(false);
   };
@@ -57,8 +65,16 @@ const TaskList: React.FC = () => {
     setShowEditDialog(true);
   };
   
-  const handleUpdateTask = (taskData: Omit<Task, 'id' | 'completed' | 'createdAt' | 'completedAt' | 'userId'>) => {
+  const handleUpdateTask = (values: { title?: string; description?: string; deadline?: Date; xpReward?: number }) => {
     if (editingTask) {
+      // Convert Date to ISO string for the API
+      const taskData: Omit<Task, 'id' | 'completed' | 'createdAt' | 'completedAt' | 'userId'> = {
+        title: values.title || '',
+        description: values.description || '',
+        deadline: values.deadline ? values.deadline.toISOString() : null,
+        xpReward: values.xpReward || 10
+      };
+      
       updateTask(editingTask.id, taskData);
       setShowEditDialog(false);
       setEditingTask(null);
