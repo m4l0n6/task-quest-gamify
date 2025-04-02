@@ -50,11 +50,13 @@ const LevelUp: React.FC<LevelUpProps> = ({ level, onComplete }) => {
         animationDelay: `${Math.random() * 0.5}s`,
         opacity: 0,
         transform: 'scale(0)',
-        animation: `${phase >= 1 ? 'starBurst 2s forwards' : 'none'}`
-      };
+        animation: `${phase >= 1 ? 'starBurst 2s forwards' : 'none'}`,
+        '--tx': `${(Math.random() * 200) - 100}px`,
+        '--ty': `${(Math.random() * 200) - 100}px`,
+      } as React.CSSProperties;
       
       stars.push(
-        <div key={i} style={style as any} className="absolute">
+        <div key={i} style={style} className="absolute">
           <Star className="h-4 w-4 text-epic-yellow fill-epic-yellow" />
         </div>
       );
@@ -66,14 +68,35 @@ const LevelUp: React.FC<LevelUpProps> = ({ level, onComplete }) => {
   
   return (
     <div className="fixed inset-0 flex items-center justify-center pointer-events-none z-50 bg-black/70 backdrop-blur-lg">
-      <style jsx global>{`
-        @keyframes starBurst {
-          0% { opacity: 0; transform: scale(0) rotate(0deg); }
-          20% { opacity: 1; transform: scale(1) rotate(20deg); }
-          60% { opacity: 1; transform: scale(1) rotate(20deg) translate(0, 0); }
-          100% { opacity: 0; transform: scale(0.5) rotate(45deg) translate(var(--tx), var(--ty)); }
-        }
-      `}</style>
+      <style>
+        {`
+          @keyframes starBurst {
+            0% { opacity: 0; transform: scale(0) rotate(0deg); }
+            20% { opacity: 1; transform: scale(1) rotate(20deg); }
+            60% { opacity: 1; transform: scale(1) rotate(20deg) translate(0, 0); }
+            100% { opacity: 0; transform: scale(0.5) rotate(45deg) translate(var(--tx), var(--ty)); }
+          }
+          
+          @keyframes rotate-shine {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+          
+          @keyframes pulse-scale {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+          }
+          
+          .animate-rotate-shine {
+            animation: rotate-shine 10s linear infinite;
+          }
+          
+          .animate-pulse-scale {
+            animation: pulse-scale 1.5s ease-in-out infinite;
+          }
+        `}
+      </style>
       
       <div className="relative">
         {getStars()}
