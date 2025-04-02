@@ -3,7 +3,6 @@ import React from 'react';
 import { Outlet } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import Header from './Header';
-import Footer from './Footer';
 import Loading from '../ui/Loading';
 import LoginPage from '@/pages/LoginPage';
 
@@ -24,7 +23,6 @@ const AppLayout: React.FC = () => {
       <main className="flex-grow container px-4 py-6 mx-auto">
         <Outlet />
       </main>
-      <Footer />
     </div>
   );
 };
