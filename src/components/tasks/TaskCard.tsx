@@ -4,7 +4,7 @@ import { Task } from '@/types';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Calendar, CheckCircle2, Edit, Star, Trash2 } from 'lucide-react';
+import { Calendar, CheckCircle2, Edit, Star, Trash2, Clock, Award } from 'lucide-react';
 import { formatDistanceToNow, isPast, isToday, parseISO } from 'date-fns';
 import { useTask } from '@/contexts/TaskContext';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -34,8 +34,8 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit }) => {
     const isTodayDeadline = isToday(deadlineDate);
     
     return (
-      <Badge variant={isPastDeadline ? "destructive" : isTodayDeadline ? "default" : "secondary"}>
-        <Calendar className="h-3 w-3 mr-1" />
+      <Badge variant={isPastDeadline ? "destructive" : isTodayDeadline ? "default" : "secondary"} className="animate-pulse-scale">
+        <Clock className="h-3 w-3 mr-1" />
         {isTodayDeadline 
           ? "Today" 
           : isPastDeadline 
@@ -45,17 +45,46 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit }) => {
     );
   };
   
+  // Select a border color based on XP reward
+  const getBorderColor = () => {
+    if (task.xpReward >= 80) return "border-epic-purple";
+    if (task.xpReward >= 50) return "border-epic-blue";
+    if (task.xpReward >= 30) return "border-epic-yellow";
+    return "border-gray-200";
+  };
+  
+  // Get rarity label based on XP reward
+  const getRarityLabel = () => {
+    if (task.xpReward >= 80) return "Legendary";
+    if (task.xpReward >= 50) return "Epic";
+    if (task.xpReward >= 30) return "Rare";
+    return "Common";
+  };
+  
+  // Get rarity color class
+  const getRarityColorClass = () => {
+    if (task.xpReward >= 80) return "text-epic-purple";
+    if (task.xpReward >= 50) return "text-epic-blue";
+    if (task.xpReward >= 30) return "text-epic-yellow";
+    return "text-gray-400";
+  };
+  
   return (
-    <Card className={`task-card-hover ${task.completed ? 'bg-muted/50' : ''}`}>
-      <CardHeader className="pb-2">
+    <Card className={`task-card-hover ${task.completed ? 'bg-muted/50' : ''} border-2 ${getBorderColor()} transition-all hover:shadow-lg transform hover:-translate-y-1`}>
+      <CardHeader className="pb-2 relative">
         <div className="flex justify-between items-start">
           <CardTitle className={`${task.completed ? 'line-through text-muted-foreground' : ''}`}>
             {task.title}
           </CardTitle>
-          <Badge variant="outline" className="ml-2 flex items-center">
-            <Star className="h-3 w-3 mr-1 fill-epic-yellow stroke-epic-yellow" />
-            {task.xpReward} XP
-          </Badge>
+          <div className="flex flex-col items-end">
+            <Badge variant="outline" className="flex items-center animate-pulse mb-1">
+              <Star className={`h-3 w-3 mr-1 fill-epic-yellow stroke-epic-yellow ${task.xpReward >= 50 ? 'animate-pulse' : ''}`} />
+              <span className="font-bold text-epic-yellow">{task.xpReward} XP</span>
+            </Badge>
+            <span className={`text-xs font-semibold ${getRarityColorClass()}`}>
+              {getRarityLabel()}
+            </span>
+          </div>
         </div>
       </CardHeader>
       
@@ -68,7 +97,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit }) => {
           {getDeadlineDisplay()}
           
           {task.completed && (
-            <Badge variant="default" className="bg-epic-green text-white">
+            <Badge variant="default" className="bg-epic-green text-white animate-bounce-in">
               <CheckCircle2 className="h-3 w-3 mr-1" />
               Completed
             </Badge>
@@ -79,22 +108,25 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit }) => {
       <CardFooter className="pt-1">
         {task.completed ? (
           <div className="w-full text-right text-xs text-muted-foreground">
-            Completed {formatDistanceToNow(parseISO(task.completedAt!), { addSuffix: true })}
+            <span className="flex items-center justify-end">
+              <Award className="h-3 w-3 mr-1 text-epic-green" />
+              Completed {formatDistanceToNow(parseISO(task.completedAt!), { addSuffix: true })}
+            </span>
           </div>
         ) : (
           <div className="flex w-full justify-between gap-2">
             <Dialog>
               <DialogTrigger asChild>
-                <Button variant="outline" size="sm" className="flex-1">
+                <Button variant="outline" size="sm" className="flex-1 hover:bg-destructive/10 hover:text-destructive">
                   <Trash2 className="h-4 w-4 mr-1" />
                   Delete
                 </Button>
               </DialogTrigger>
-              <DialogContent>
+              <DialogContent className="border-2 border-destructive/50">
                 <DialogHeader>
                   <DialogTitle>Confirm Deletion</DialogTitle>
                   <DialogDescription>
-                    Are you sure you want to delete this task? This action cannot be undone.
+                    Are you sure you want to delete this quest? This action cannot be undone.
                   </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
@@ -104,7 +136,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit }) => {
               </DialogContent>
             </Dialog>
             
-            <Button variant="outline" size="sm" className="flex-1" onClick={onEdit}>
+            <Button variant="outline" size="sm" className="flex-1 hover:bg-blue-500/10 hover:text-blue-500" onClick={onEdit}>
               <Edit className="h-4 w-4 mr-1" />
               Edit
             </Button>
@@ -112,7 +144,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit }) => {
             <Button 
               variant="default" 
               size="sm" 
-              className="flex-1 bg-epic-green hover:bg-epic-green/90"
+              className="flex-1 bg-epic-green hover:bg-epic-green/90 animate-pulse-scale"
               onClick={handleComplete}
             >
               <CheckCircle2 className="h-4 w-4 mr-1" />
