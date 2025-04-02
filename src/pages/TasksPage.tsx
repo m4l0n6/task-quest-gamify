@@ -2,16 +2,24 @@
 import React from 'react';
 import TaskList from '@/components/tasks/TaskList';
 import { Star, Swords } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const TasksPage: React.FC = () => {
+  const isMobile = useIsMobile();
+  
   return (
     <div>
-      <div className="mb-6 flex items-center">
-        <Swords className="h-8 w-8 mr-2 text-epic-purple" />
-        <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-epic-purple to-epic-blue">Your Quests</h1>
-        <div className="ml-auto flex items-center px-3 py-1 bg-black/5 rounded-full text-sm">
+      <div className={`mb-4 ${isMobile ? 'flex flex-col gap-2' : 'flex items-center'}`}>
+        <div className="flex items-center">
+          <Swords className="h-6 w-6 mr-2 text-epic-purple" />
+          <h1 className="text-xl md:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-epic-purple to-epic-blue">
+            Your Quests
+          </h1>
+        </div>
+        
+        <div className={`${isMobile ? 'w-full' : 'ml-auto'} flex items-center px-3 py-1 bg-black/5 rounded-full text-sm`}>
           <Star className="h-4 w-4 mr-1 text-epic-yellow fill-epic-yellow" />
-          <span className="font-medium">Complete quests to earn XP and level up!</span>
+          <span className="font-medium text-xs md:text-sm">Complete quests to earn XP!</span>
         </div>
       </div>
       <TaskList />

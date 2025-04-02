@@ -8,6 +8,7 @@ import { Calendar, CheckCircle2, Edit, Star, Trash2, Clock, Award } from 'lucide
 import { formatDistanceToNow, isPast, isToday, parseISO } from 'date-fns';
 import { useTask } from '@/contexts/TaskContext';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface TaskCardProps {
   task: Task;
@@ -16,6 +17,7 @@ interface TaskCardProps {
 
 const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit }) => {
   const { deleteTask, markTaskComplete } = useTask();
+  const isMobile = useIsMobile();
   
   const handleComplete = () => {
     markTaskComplete(task.id);
@@ -71,9 +73,9 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit }) => {
   
   return (
     <Card className={`task-card-hover ${task.completed ? 'bg-muted/50' : ''} border-2 ${getBorderColor()} transition-all hover:shadow-lg transform hover:-translate-y-1`}>
-      <CardHeader className="pb-2 relative">
+      <CardHeader className={`pb-2 relative ${isMobile ? 'p-4' : 'p-6'}`}>
         <div className="flex justify-between items-start">
-          <CardTitle className={`${task.completed ? 'line-through text-muted-foreground' : ''}`}>
+          <CardTitle className={`${task.completed ? 'line-through text-muted-foreground' : ''} ${isMobile ? 'text-lg' : 'text-2xl'}`}>
             {task.title}
           </CardTitle>
           <div className="flex flex-col items-end">
@@ -88,7 +90,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit }) => {
         </div>
       </CardHeader>
       
-      <CardContent>
+      <CardContent className={isMobile ? 'p-4 pt-0' : 'p-6 pt-0'}>
         <p className={`text-sm ${task.completed ? 'text-muted-foreground' : ''}`}>
           {task.description}
         </p>
@@ -105,7 +107,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit }) => {
         </div>
       </CardContent>
       
-      <CardFooter className="pt-1">
+      <CardFooter className={`${isMobile ? 'p-4 pt-0 flex-col gap-2' : 'p-6 pt-0'}`}>
         {task.completed ? (
           <div className="w-full text-right text-xs text-muted-foreground">
             <span className="flex items-center justify-end">
@@ -114,29 +116,29 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit }) => {
             </span>
           </div>
         ) : (
-          <div className="flex w-full justify-between gap-2">
+          <div className={`flex w-full ${isMobile ? 'flex-col' : 'flex-row'} justify-between gap-2`}>
             <Dialog>
               <DialogTrigger asChild>
-                <Button variant="outline" size="sm" className="flex-1 hover:bg-destructive/10 hover:text-destructive">
+                <Button variant="outline" size="sm" className={`${isMobile ? 'w-full' : 'flex-1'} hover:bg-destructive/10 hover:text-destructive`}>
                   <Trash2 className="h-4 w-4 mr-1" />
                   Delete
                 </Button>
               </DialogTrigger>
-              <DialogContent className="border-2 border-destructive/50">
+              <DialogContent className={`border-2 border-destructive/50 ${isMobile ? 'w-[95%]' : ''}`}>
                 <DialogHeader>
                   <DialogTitle>Confirm Deletion</DialogTitle>
                   <DialogDescription>
                     Are you sure you want to delete this quest? This action cannot be undone.
                   </DialogDescription>
                 </DialogHeader>
-                <DialogFooter>
+                <DialogFooter className={isMobile ? 'flex flex-col gap-2' : ''}>
                   <Button variant="outline" onClick={() => {}}>Cancel</Button>
                   <Button variant="destructive" onClick={handleDelete}>Delete</Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
             
-            <Button variant="outline" size="sm" className="flex-1 hover:bg-blue-500/10 hover:text-blue-500" onClick={onEdit}>
+            <Button variant="outline" size="sm" className={`${isMobile ? 'w-full' : 'flex-1'} hover:bg-blue-500/10 hover:text-blue-500`} onClick={onEdit}>
               <Edit className="h-4 w-4 mr-1" />
               Edit
             </Button>
@@ -144,7 +146,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit }) => {
             <Button 
               variant="default" 
               size="sm" 
-              className="flex-1 bg-epic-green hover:bg-epic-green/90 animate-pulse-scale"
+              className={`${isMobile ? 'w-full' : 'flex-1'} bg-epic-green hover:bg-epic-green/90 animate-pulse-scale`}
               onClick={handleComplete}
             >
               <CheckCircle2 className="h-4 w-4 mr-1" />
