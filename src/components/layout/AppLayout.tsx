@@ -22,7 +22,7 @@ const AppLayout: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-br from-background to-background/70">
       <Header />
-      <main className={`flex-grow container ${isMobile ? 'px-2 py-3' : 'px-4 py-6'} mx-auto`}>
+      <main className={`flex-grow ${isMobile ? 'px-2 py-3 max-w-full' : 'container px-4 py-6'} mx-auto overflow-hidden`}>
         <Outlet />
       </main>
     </div>

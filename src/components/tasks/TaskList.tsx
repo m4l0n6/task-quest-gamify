@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Task } from '@/types';
 import { useTask } from '@/contexts/TaskContext';
@@ -87,7 +88,7 @@ const TaskList: React.FC = () => {
   }
   
   return (
-    <div>
+    <div className="w-full overflow-hidden">
       <div className="mb-4">
         <Tabs 
           defaultValue="all" 
@@ -95,17 +96,17 @@ const TaskList: React.FC = () => {
           onValueChange={setActiveTab}
           className="w-full"
         >
-          <div className={`${isMobile ? 'flex flex-col gap-3' : 'flex justify-between items-center'}`}>
-            <TabsList className={`${isMobile ? 'w-full' : ''}`}>
-              <TabsTrigger value="all" className="flex-1">All</TabsTrigger>
-              <TabsTrigger value="active" className="flex-1">Active</TabsTrigger>
-              <TabsTrigger value="completed" className="flex-1">Done</TabsTrigger>
+          <div className={`${isMobile ? 'flex flex-col gap-2' : 'flex justify-between items-center'}`}>
+            <TabsList className={`${isMobile ? 'w-full' : ''} h-9`}>
+              <TabsTrigger value="all" className="flex-1 text-xs md:text-sm">All</TabsTrigger>
+              <TabsTrigger value="active" className="flex-1 text-xs md:text-sm">Active</TabsTrigger>
+              <TabsTrigger value="completed" className="flex-1 text-xs md:text-sm">Done</TabsTrigger>
             </TabsList>
             
-            <div className={`flex ${isMobile ? 'w-full justify-between' : 'items-center gap-2'}`}>
+            <div className={`flex ${isMobile ? 'w-full justify-between space-x-2' : 'items-center gap-2'}`}>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm" className="w-24">
+                  <Button variant="outline" size="sm" className={`${isMobile ? 'px-2' : 'w-24'}`}>
                     <ListFilter className="h-4 w-4 mr-1" />
                     Sort
                   </Button>
@@ -133,10 +134,10 @@ const TaskList: React.FC = () => {
                 <DialogTrigger asChild>
                   <Button size="sm" className={`${isMobile ? 'flex-1' : ''}`}>
                     <Plus className="h-4 w-4 mr-1" />
-                    {isMobile ? 'New Quest' : 'Add Task'}
+                    {isMobile ? 'Add' : 'Add Task'}
                   </Button>
                 </DialogTrigger>
-                <DialogContent className={`${isMobile ? 'w-[95%] p-4' : ''}`}>
+                <DialogContent className={`${isMobile ? 'w-[95%] p-4 max-w-[95vw]' : ''}`}>
                   <DialogHeader>
                     <DialogTitle>Create a New Quest</DialogTitle>
                   </DialogHeader>
@@ -149,14 +150,14 @@ const TaskList: React.FC = () => {
             </div>
           </div>
           
-          <TabsContent value="all" className="mt-4">
+          <TabsContent value="all" className="mt-3">
             {sortedTasks.length === 0 ? (
-              <div className="text-center py-10">
-                <p className="text-muted-foreground mb-4">No quests found</p>
+              <div className="text-center py-6">
+                <p className="text-muted-foreground mb-3 text-sm">No quests found</p>
                 <Button onClick={() => setShowAddDialog(true)}>Create your first quest</Button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 gap-4">
+              <div className="grid grid-cols-1 gap-3">
                 {sortedTasks.map(task => (
                   <TaskCard 
                     key={task.id} 
@@ -168,14 +169,14 @@ const TaskList: React.FC = () => {
             )}
           </TabsContent>
           
-          <TabsContent value="active" className="mt-4">
+          <TabsContent value="active" className="mt-3">
             {sortedTasks.length === 0 ? (
-              <div className="text-center py-10">
-                <p className="text-muted-foreground mb-4">No active quests</p>
+              <div className="text-center py-6">
+                <p className="text-muted-foreground mb-3 text-sm">No active quests</p>
                 <Button onClick={() => setShowAddDialog(true)}>Begin a new adventure</Button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 gap-4">
+              <div className="grid grid-cols-1 gap-3">
                 {sortedTasks.map(task => (
                   <TaskCard 
                     key={task.id} 
@@ -187,13 +188,13 @@ const TaskList: React.FC = () => {
             )}
           </TabsContent>
           
-          <TabsContent value="completed" className="mt-4">
+          <TabsContent value="completed" className="mt-3">
             {sortedTasks.length === 0 ? (
-              <div className="text-center py-10">
-                <p className="text-muted-foreground">No completed quests yet</p>
+              <div className="text-center py-6">
+                <p className="text-muted-foreground text-sm">No completed quests yet</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 gap-4">
+              <div className="grid grid-cols-1 gap-3">
                 {sortedTasks.map(task => (
                   <TaskCard 
                     key={task.id} 
@@ -209,7 +210,7 @@ const TaskList: React.FC = () => {
       
       {/* Edit Task Dialog */}
       <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
-        <DialogContent className={`${isMobile ? 'w-[95%] p-4' : ''}`}>
+        <DialogContent className={`${isMobile ? 'w-[95%] p-4 max-w-[95vw]' : ''}`}>
           <DialogHeader>
             <DialogTitle>Edit Quest</DialogTitle>
           </DialogHeader>
