@@ -5,7 +5,7 @@ import { Home, Award, List, Trophy } from 'lucide-react';
 
 const Footer: React.FC = () => {
   return (
-    <footer className="bg-background shadow-md shadow-muted/20 py-2">
+    <footer className="fixed bottom-0 left-0 right-0 bg-background shadow-md shadow-muted/20 py-2 z-10">
       <div className="container mx-auto">
         <div className="flex justify-around items-center">
           <Link to="/" className="flex flex-col items-center p-2">
