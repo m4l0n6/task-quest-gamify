@@ -1,9 +1,12 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { calculateXpProgress } from '@/utils/gamification';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Coins } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 const Header: React.FC = () => {
   const { user } = useAuth();
@@ -23,7 +26,15 @@ const Header: React.FC = () => {
             </span>
           </Link>
           
-          {/* Only keep Avatar */}
+          {/* Add tokens display */}
+          <Link to="/daily" className="flex items-center">
+            <Badge variant="outline" className="flex items-center bg-epic-yellow/10 hover:bg-epic-yellow/20 border-epic-yellow/30 px-3 py-1">
+              <Coins className="h-3 w-3 mr-1 text-epic-yellow fill-epic-yellow" />
+              <span className="font-medium">{user.tokens}</span>
+            </Badge>
+          </Link>
+          
+          {/* Avatar */}
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>

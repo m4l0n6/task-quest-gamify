@@ -1,5 +1,5 @@
 
-import { User, Task, Badge, Notification } from '@/types';
+import { User, Task, Badge, Notification, DailyTask } from '@/types';
 
 const STORAGE_KEYS = {
   USER: 'epicTasks_user',
@@ -7,6 +7,7 @@ const STORAGE_KEYS = {
   BADGES: 'epicTasks_badges',
   NOTIFICATIONS: 'epicTasks_notifications',
   USERS: 'epicTasks_users', // For leaderboard
+  DAILY_TASKS: 'epicTasks_daily_tasks',
 };
 
 // User Functions
@@ -64,6 +65,16 @@ export const deleteTask = (taskId: string): void => {
   const tasks = getTasks();
   const filteredTasks = tasks.filter(task => task.id !== taskId);
   saveTasks(filteredTasks);
+};
+
+// Daily Tasks Functions
+export const saveDailyTasks = (tasks: DailyTask[]): void => {
+  localStorage.setItem(STORAGE_KEYS.DAILY_TASKS, JSON.stringify(tasks));
+};
+
+export const getDailyTasks = (): DailyTask[] => {
+  const tasksJson = localStorage.getItem(STORAGE_KEYS.DAILY_TASKS);
+  return tasksJson ? JSON.parse(tasksJson) : [];
 };
 
 // Badges Functions

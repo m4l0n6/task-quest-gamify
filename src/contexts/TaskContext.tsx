@@ -10,7 +10,7 @@ import { toast } from '@/hooks/use-toast';
 interface TaskContextType {
   tasks: Task[];
   isLoading: boolean;
-  addTask: (taskData: Omit<Task, 'id' | 'completed' | 'createdAt' | 'completedAt' | 'userId'>) => void;
+  addTask: (taskData: Omit<Task, 'id' | 'completed' | 'createdAt' | 'completedAt' | 'userId' | 'tokenReward'>) => void;
   updateTask: (taskId: string, taskData: Partial<Task>) => void;
   deleteTask: (taskId: string) => void;
   markTaskComplete: (taskId: string) => void;
@@ -47,7 +47,7 @@ export const TaskProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  const addTask = (taskData: Omit<Task, 'id' | 'completed' | 'createdAt' | 'completedAt' | 'userId'>) => {
+  const addTask = (taskData: Omit<Task, 'id' | 'completed' | 'createdAt' | 'completedAt' | 'userId' | 'tokenReward'>) => {
     if (!user) {
       toast({
         title: "Error",
@@ -68,12 +68,17 @@ export const TaskProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
     
     try {
+      // Calculate token reward based on XP (default to 20% of XP)
+      const xpReward = Math.min(taskData.xpReward, 100); // Cap XP reward at 100
+      const tokenReward = Math.ceil(xpReward * 0.2);
+      
       const newTask: Task = {
         id: uuidv4(),
         title: taskData.title,
         description: taskData.description,
         deadline: taskData.deadline,
-        xpReward: Math.min(taskData.xpReward, 100), // Cap XP reward at 100
+        xpReward,
+        tokenReward,
         completed: false,
         createdAt: new Date().toISOString(),
         completedAt: null,
@@ -123,7 +128,11 @@ export const TaskProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         ...tasks[taskIndex],
         ...taskData,
         // Cap XP reward if it's being updated
-        xpReward: taskData.xpReward !== undefined ? Math.min(taskData.xpReward, 100) : tasks[taskIndex].xpReward
+        xpReward: taskData.xpReward !== undefined ? Math.min(taskData.xpReward, 100) : tasks[taskIndex].xpReward,
+        // Update token reward if XP changed
+        tokenReward: taskData.xpReward !== undefined 
+          ? Math.ceil(Math.min(taskData.xpReward, 100) * 0.2) 
+          : tasks[taskIndex].tokenReward
       };
       
       storageUpdateTask(updatedTask);
@@ -186,7 +195,7 @@ export const TaskProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const markTaskComplete = (taskId: string) => {
     try {
-      const { task, xpGained, leveledUp } = completeTask(taskId);
+      const { task, xpGained, tokenGained, leveledUp } = completeTask(taskId);
       
       // Update local task state
       setTasks(prevTasks => 
@@ -200,7 +209,7 @@ export const TaskProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       // Show toast with animation
       toast({
         title: "Task Completed!",
-        description: `You earned ${xpGained} XP${leveledUp ? " and leveled up!" : "!"}`,
+        description: `You earned ${xpGained} XP and ${tokenGained} tokens${leveledUp ? " and leveled up!" : "!"}`,
         variant: "default",
       });
       

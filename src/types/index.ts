@@ -7,6 +7,9 @@ export interface User {
   level: number;
   badges: Badge[];
   completedTasks: number;
+  tokens: number;
+  lastDailyLogin: string | null;
+  dailyLoginStreak: number;
   createdAt: string;
   lastLoginAt: string;
 }
@@ -17,6 +20,7 @@ export interface Task {
   description: string;
   deadline: string | null;
   xpReward: number;
+  tokenReward: number;
   completed: boolean;
   createdAt: string;
   completedAt: string | null;
@@ -42,8 +46,22 @@ export interface Leaderboard {
 
 export interface Notification {
   id: string;
-  type: 'deadline' | 'levelUp' | 'badge' | 'leaderboard';
+  type: 'deadline' | 'levelUp' | 'badge' | 'leaderboard' | 'token' | 'streak';
   message: string;
   read: boolean;
   createdAt: string;
+}
+
+export interface DailyTask {
+  id: string;
+  title: string;
+  description: string;
+  tokenReward: number;
+  completed: boolean;
+  type: 'login' | 'complete_task' | 'reach_streak';
+  requirement: number;
+  progress: number;
+  createdAt: string;
+  completedAt: string | null;
+  expiresAt: string;
 }

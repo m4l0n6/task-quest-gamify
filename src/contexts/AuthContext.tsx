@@ -1,8 +1,10 @@
+
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User } from '@/types';
 import { mockTelegramLogin, initializeTelegramApi } from '@/utils/telegramMock';
 import { getUser } from '@/utils/storage';
 import { toast } from '@/hooks/use-toast';
+import { processDailyLogin, refreshDailyTasksIfNeeded } from '@/utils/gamification';
 
 interface AuthContextType {
   user: User | null;
@@ -26,7 +28,31 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     // Check if user is already logged in
     const storedUser = getUser();
     if (storedUser) {
+      // If tokens field doesn't exist, initialize it
+      if (storedUser.tokens === undefined) {
+        storedUser.tokens = 0;
+        storedUser.lastDailyLogin = null;
+        storedUser.dailyLoginStreak = 0;
+      }
+      
       setUser(storedUser);
+      
+      // Process daily login rewards
+      try {
+        const { isFirstLogin, tokensAwarded, currentStreak } = processDailyLogin();
+        
+        if (isFirstLogin && tokensAwarded > 0) {
+          toast({
+            title: "Daily Login Reward!",
+            description: `You received ${tokensAwarded} tokens for logging in today! Current streak: ${currentStreak} days.`,
+          });
+        }
+        
+        // Refresh daily tasks if needed
+        refreshDailyTasksIfNeeded();
+      } catch (err) {
+        console.error("Error processing daily login:", err);
+      }
     }
     setIsLoading(false);
   }, []);
@@ -39,7 +65,32 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       // In a real app, this would verify the Telegram auth data
       // For now, we'll use our mock
       const loggedInUser = await mockTelegramLogin();
+      
+      // Initialize tokens if not present
+      if (loggedInUser.tokens === undefined) {
+        loggedInUser.tokens = 0;
+        loggedInUser.lastDailyLogin = null;
+        loggedInUser.dailyLoginStreak = 0;
+      }
+      
       setUser(loggedInUser);
+      
+      // Process daily login rewards and refresh tasks
+      try {
+        const { isFirstLogin, tokensAwarded, currentStreak } = processDailyLogin();
+        
+        if (isFirstLogin && tokensAwarded > 0) {
+          toast({
+            title: "Daily Login Reward!",
+            description: `You received ${tokensAwarded} tokens for logging in today! Current streak: ${currentStreak} days.`,
+          });
+        }
+        
+        // Refresh daily tasks if needed
+        refreshDailyTasksIfNeeded();
+      } catch (err) {
+        console.error("Error processing daily login:", err);
+      }
       
       toast({
         title: "Login Successful",
