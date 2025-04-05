@@ -72,6 +72,9 @@ export const mockTelegramLogin = async (): Promise<User> => {
     level: 1,
     badges: [],
     completedTasks: 0,
+    tokens: 0,
+    lastDailyLogin: null,
+    dailyLoginStreak: 0,
     createdAt: new Date().toISOString(),
     lastLoginAt: new Date().toISOString()
   };
@@ -91,6 +94,9 @@ export const createMockUsers = () => {
       level: 9,
       badges: [],
       completedTasks: 42,
+      tokens: 200,
+      lastDailyLogin: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+      dailyLoginStreak: 3,
       createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
       lastLoginAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
     },
@@ -102,6 +108,9 @@ export const createMockUsers = () => {
       level: 13,
       badges: [],
       completedTasks: 76,
+      tokens: 350,
+      lastDailyLogin: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+      dailyLoginStreak: 5,
       createdAt: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000).toISOString(),
       lastLoginAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
     },
@@ -113,6 +122,9 @@ export const createMockUsers = () => {
       level: 16,
       badges: [],
       completedTasks: 108,
+      tokens: 460,
+      lastDailyLogin: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+      dailyLoginStreak: 7,
       createdAt: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString(),
       lastLoginAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()
     },
@@ -124,6 +136,9 @@ export const createMockUsers = () => {
       level: 22,
       badges: [],
       completedTasks: 135,
+      tokens: 590,
+      lastDailyLogin: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+      dailyLoginStreak: 12,
       createdAt: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString(),
       lastLoginAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
     },
@@ -135,6 +150,9 @@ export const createMockUsers = () => {
       level: 5,
       badges: [],
       completedTasks: 28,
+      tokens: 120,
+      lastDailyLogin: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+      dailyLoginStreak: 1,
       createdAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
       lastLoginAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
     }

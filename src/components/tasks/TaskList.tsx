@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Task } from '@/types';
 import { useTask } from '@/contexts/TaskContext';
@@ -53,7 +52,8 @@ const TaskList: React.FC = () => {
       title: values.title || '',
       description: values.description || '',
       deadline: values.deadline ? values.deadline.toISOString() : null,
-      xpReward: values.xpReward || 10
+      xpReward: values.xpReward || 10,
+      tokenReward: Math.ceil((values.xpReward || 10) / 5) // Default token reward is 1/5 of XP
     };
     
     addTask(taskData);
@@ -72,7 +72,8 @@ const TaskList: React.FC = () => {
         title: values.title || '',
         description: values.description || '',
         deadline: values.deadline ? values.deadline.toISOString() : null,
-        xpReward: values.xpReward || 10
+        xpReward: values.xpReward || 10,
+        tokenReward: editingTask.tokenReward || Math.ceil((values.xpReward || 10) / 5) // Keep existing token reward or calculate
       };
       
       updateTask(editingTask.id, taskData);
