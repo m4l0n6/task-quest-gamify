@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Award, List, Trophy, Calendar } from 'lucide-react';
+import { Home, Award, List, Trophy } from 'lucide-react';
 
 const Footer: React.FC = () => {
   const location = useLocation();
@@ -27,10 +27,6 @@ const Footer: React.FC = () => {
           <Link to="/tasks" className={getLinkClass('/tasks')}>
             <List className="h-5 w-5" />
             <span className="text-xs mt-1">Tasks</span>
-          </Link>
-          <Link to="/daily" className={getLinkClass('/daily')}>
-            <Calendar className="h-5 w-5" />
-            <span className="text-xs mt-1">Daily</span>
           </Link>
           <Link to="/badges" className={getLinkClass('/badges')}>
             <Award className="h-5 w-5" />

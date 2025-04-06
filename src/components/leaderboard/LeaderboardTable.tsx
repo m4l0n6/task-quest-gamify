@@ -5,8 +5,9 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Trophy, Medal, Award } from 'lucide-react';
+import { Trophy, Medal, Award, X } from 'lucide-react';
 import Loading from '../ui/Loading';
+import { Button } from '@/components/ui/button';
 
 const LeaderboardTable: React.FC = () => {
   const { leaderboard, userRank, isLoading, refreshLeaderboard } = useLeaderboard();
@@ -55,7 +56,16 @@ const LeaderboardTable: React.FC = () => {
   
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="relative">
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="absolute right-2 top-2" 
+          onClick={() => window.history.back()}
+        >
+          <X className="h-5 w-5" />
+          <span className="sr-only">Close</span>
+        </Button>
         <CardTitle className="text-center">EpicTasks Leaderboard</CardTitle>
       </CardHeader>
       <CardContent>
