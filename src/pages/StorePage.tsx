@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useStore } from '@/contexts/StoreContext';
 import StoreList from '@/components/store/StoreList';
 import { useAuth } from '@/contexts/AuthContext';
@@ -8,11 +8,13 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import Loading from '@/components/ui/Loading';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const StorePage: React.FC = () => {
   const { storeItems, loadingStore, purchaseItem, activateItem, initializeStore } = useStore();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   
   useEffect(() => {
     // Initialize store if needed
@@ -43,7 +45,7 @@ const StorePage: React.FC = () => {
   };
   
   return (
-    <div className="container px-4 py-6 mx-auto max-w-md">
+    <div className={`container px-4 py-6 mx-auto ${isMobile ? 'max-w-md' : 'max-w-6xl'}`}>
       <div className="mb-4">
         <Button 
           variant="ghost" 

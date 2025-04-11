@@ -4,6 +4,7 @@ import StoreItem, { StoreItemProps } from './StoreItem';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/AuthContext';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 type StoreItemType = Omit<StoreItemProps, 'onPurchase' | 'onUse'>;
 
@@ -15,6 +16,7 @@ interface StoreListProps {
 
 const StoreList: React.FC<StoreListProps> = ({ items, onPurchase, onUse }) => {
   const { user } = useAuth();
+  const isMobile = useIsMobile();
   
   // Count the number of items per category
   const featureCount = items.filter(item => item.type === 'feature').length;
@@ -56,7 +58,7 @@ const StoreList: React.FC<StoreListProps> = ({ items, onPurchase, onUse }) => {
         </TabsList>
         
         <TabsContent value="all" className="mt-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'} gap-4`}>
             {items.map(item => (
               <StoreItem 
                 key={item.id}
@@ -69,7 +71,7 @@ const StoreList: React.FC<StoreListProps> = ({ items, onPurchase, onUse }) => {
         </TabsContent>
         
         <TabsContent value="features" className="mt-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'} gap-4`}>
             {items
               .filter(item => item.type === 'feature')
               .map(item => (
@@ -84,7 +86,7 @@ const StoreList: React.FC<StoreListProps> = ({ items, onPurchase, onUse }) => {
         </TabsContent>
         
         <TabsContent value="avatars" className="mt-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'} gap-4`}>
             {items
               .filter(item => item.type === 'avatar')
               .map(item => (
@@ -99,7 +101,7 @@ const StoreList: React.FC<StoreListProps> = ({ items, onPurchase, onUse }) => {
         </TabsContent>
         
         <TabsContent value="badges" className="mt-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'} gap-4`}>
             {items
               .filter(item => item.type === 'badge')
               .map(item => (
@@ -114,7 +116,7 @@ const StoreList: React.FC<StoreListProps> = ({ items, onPurchase, onUse }) => {
         </TabsContent>
         
         <TabsContent value="themes" className="mt-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'} gap-4`}>
             {items
               .filter(item => item.type === 'theme')
               .map(item => (
