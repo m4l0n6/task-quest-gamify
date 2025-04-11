@@ -187,6 +187,15 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         
         setPurchasedItems(updatedPurchased);
         savePurchasedItems([...getPurchasedItems().filter(p => p.userId !== user.id), ...updatedPurchased]);
+        
+        // Toggle the isActive state for this specific item
+        const newIsActive = !purchasedItem.isActive;
+        
+        toast({
+          title: newIsActive ? 'Item Activated' : 'Item Deactivated',
+          description: `${item?.title || 'Item'} has been ${newIsActive ? 'activated' : 'deactivated'}`,
+          variant: 'default',
+        });
       } else {
         // For features that can be toggled on/off individually
         const updatedPurchased = purchasedItems.map(p => 
@@ -195,13 +204,13 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         
         setPurchasedItems(updatedPurchased);
         savePurchasedItems([...getPurchasedItems().filter(p => p.userId !== user.id), ...updatedPurchased]);
+        
+        toast({
+          title: !purchasedItem.isActive ? 'Item Activated' : 'Item Deactivated',
+          description: `${item?.title || 'Item'} has been ${!purchasedItem.isActive ? 'activated' : 'deactivated'}`,
+          variant: 'default',
+        });
       }
-
-      toast({
-        title: purchasedItem.isActive ? 'Item Deactivated' : 'Item Activated',
-        description: `${item?.title || 'Item'} has been ${purchasedItem.isActive ? 'deactivated' : 'activated'}`,
-        variant: 'default',
-      });
       
       return true;
     } catch (error) {

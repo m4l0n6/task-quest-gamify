@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useStore } from '@/contexts/StoreContext';
 import StoreList from '@/components/store/StoreList';
 import { useAuth } from '@/contexts/AuthContext';
@@ -9,12 +9,14 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import Loading from '@/components/ui/Loading';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useTheme } from '@/contexts/ThemeContext';
 
 const StorePage: React.FC = () => {
   const { storeItems, loadingStore, purchaseItem, activateItem, initializeStore } = useStore();
   const { user } = useAuth();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const { toggleTheme } = useTheme();
   
   useEffect(() => {
     // Initialize store if needed
@@ -37,7 +39,11 @@ const StorePage: React.FC = () => {
   }
   
   const handlePurchase = (id: string) => {
-    purchaseItem(id);
+    const success = purchaseItem(id);
+    // If successfully purchased the dark theme, trigger a theme update
+    if (success && id === 'theme-dark') {
+      toggleTheme();
+    }
   };
   
   const handleUse = (id: string) => {

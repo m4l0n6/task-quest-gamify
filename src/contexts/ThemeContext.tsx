@@ -1,0 +1,61 @@
+
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { useStore } from '@/contexts/StoreContext';
+
+type Theme = 'light' | 'dark';
+
+interface ThemeContextType {
+  theme: Theme;
+  toggleTheme: () => void;
+  isDarkThemePurchased: boolean;
+}
+
+const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+
+export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [theme, setTheme] = useState<Theme>('light');
+  const [isDarkThemePurchased, setIsDarkThemePurchased] = useState(false);
+  const { purchasedItems, storeItems } = useStore();
+
+  // Check if the dark theme has been purchased
+  useEffect(() => {
+    const darkTheme = storeItems.find(item => item.id === 'theme-dark');
+    const isDarkThemePurchased = darkTheme?.isPurchased || false;
+    setIsDarkThemePurchased(isDarkThemePurchased);
+
+    // If the theme is purchased and active, set it as the current theme
+    const darkThemePurchase = purchasedItems.find(item => item.itemId === 'theme-dark');
+    if (darkThemePurchase?.isActive) {
+      setTheme('dark');
+    }
+  }, [purchasedItems, storeItems]);
+
+  // Update the document class when theme changes
+  useEffect(() => {
+    const root = window.document.documentElement;
+    if (theme === 'dark') {
+      root.classList.add('dark');
+    } else {
+      root.classList.remove('dark');
+    }
+  }, [theme]);
+
+  // Toggle between light and dark themes
+  const toggleTheme = () => {
+    setTheme(prev => (prev === 'light' ? 'dark' : 'light'));
+  };
+
+  return (
+    <ThemeContext.Provider value={{ theme, toggleTheme, isDarkThemePurchased }}>
+      {children}
+    </ThemeContext.Provider>
+  );
+};
+
+export const useTheme = (): ThemeContextType => {
+  const context = useContext(ThemeContext);
+  if (context === undefined) {
+    throw new Error('useTheme must be used within a ThemeProvider');
+  }
+  return context;
+};
