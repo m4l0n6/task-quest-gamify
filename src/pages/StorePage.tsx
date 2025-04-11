@@ -16,7 +16,7 @@ const StorePage: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
-  const { toggleTheme } = useTheme();
+  const { setTheme } = useTheme();
   
   useEffect(() => {
     // Initialize store if needed
@@ -42,12 +42,18 @@ const StorePage: React.FC = () => {
     const success = purchaseItem(id);
     // If successfully purchased the dark theme, trigger a theme update
     if (success && id === 'theme-dark') {
-      toggleTheme();
+      setTheme('dark');
+      activateItem(id);
     }
   };
   
   const handleUse = (id: string) => {
     activateItem(id);
+    
+    // Handle special case for theme
+    if (id === 'theme-dark') {
+      setTheme('dark');
+    }
   };
   
   return (
