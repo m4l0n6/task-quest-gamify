@@ -1,134 +1,20 @@
+
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { StoreItem, PurchasedItem } from '@/types';
+import { StoreContextType } from '@/types/store.types';
 import { useAuth } from './AuthContext';
 import { toast } from '@/hooks/use-toast';
-
-// Utility functions for store management
-const STORAGE_KEYS = {
-  STORE_ITEMS: 'epicTasks_store_items',
-  PURCHASED_ITEMS: 'epicTasks_purchased_items',
-};
-
-const getStoreItems = (): StoreItem[] => {
-  const itemsJson = localStorage.getItem(STORAGE_KEYS.STORE_ITEMS);
-  return itemsJson ? JSON.parse(itemsJson) : [];
-};
-
-const saveStoreItems = (items: StoreItem[]): void => {
-  localStorage.setItem(STORAGE_KEYS.STORE_ITEMS, JSON.stringify(items));
-};
-
-const getPurchasedItems = (): PurchasedItem[] => {
-  const itemsJson = localStorage.getItem(STORAGE_KEYS.PURCHASED_ITEMS);
-  return itemsJson ? JSON.parse(itemsJson) : [];
-};
-
-const savePurchasedItems = (items: PurchasedItem[]): void => {
-  localStorage.setItem(STORAGE_KEYS.PURCHASED_ITEMS, JSON.stringify(items));
-};
-
-interface StoreContextType {
-  storeItems: StoreItem[];
-  purchasedItems: PurchasedItem[];
-  loadingStore: boolean;
-  purchaseItem: (itemId: string) => boolean;
-  activateItem: (itemId: string) => boolean;
-  initializeStore: () => void;
-}
+import { 
+  getStoreItems, 
+  saveStoreItems, 
+  getPurchasedItems, 
+  savePurchasedItems, 
+  checkUnlockRequirement,
+  initializeStoreItems
+} from '@/utils/storeUtils';
 
 const StoreContext = createContext<StoreContextType | undefined>(undefined);
-
-const defaultStoreItems: StoreItem[] = [
-  {
-    id: 'feature-premium-tasks',
-    title: 'Premium Tasks',
-    description: 'Access special high-reward tasks that give you extra XP and tokens',
-    price: 50,
-    type: 'feature',
-    iconUrl: '✨',
-    isPurchased: false,
-    isLocked: false,
-  },
-  {
-    id: 'feature-task-categories',
-    title: 'Task Categories',
-    description: 'Organize your tasks with custom categories and filters',
-    price: 75,
-    type: 'feature',
-    iconUrl: '📂',
-    isPurchased: false,
-    isLocked: false,
-  },
-  {
-    id: 'feature-multiplier',
-    title: 'XP Multiplier',
-    description: 'Get a 1.5x XP boost for all completed tasks for 24 hours',
-    price: 100,
-    type: 'feature',
-    iconUrl: '🚀',
-    isPurchased: false,
-    isLocked: true,
-    unlockRequirement: {
-      type: 'level',
-      value: 5
-    }
-  },
-  {
-    id: 'avatar-ninja',
-    title: 'Ninja Avatar',
-    description: 'Show your stealthy productivity skills with this ninja avatar',
-    price: 30,
-    type: 'avatar',
-    iconUrl: '🥷',
-    isPurchased: false,
-    isLocked: false,
-  },
-  {
-    id: 'avatar-wizard',
-    title: 'Wizard Avatar',
-    description: 'Channel your inner productivity wizard with this magical avatar',
-    price: 30,
-    type: 'avatar',
-    iconUrl: '🧙‍♂️',
-    isPurchased: false,
-    isLocked: false,
-  },
-  {
-    id: 'badge-vip',
-    title: 'VIP Badge',
-    description: 'Exclusive VIP badge to show off your premium status',
-    price: 200,
-    type: 'badge',
-    iconUrl: '💎',
-    isPurchased: false,
-    isLocked: true,
-    unlockRequirement: {
-      type: 'tasks',
-      value: 20
-    }
-  },
-  {
-    id: 'theme-dark',
-    title: 'Dark Theme',
-    description: 'A sleek dark theme for your epic productivity journey',
-    price: 40,
-    type: 'theme',
-    iconUrl: '🌙',
-    isPurchased: false,
-    isLocked: false,
-  },
-  {
-    id: 'theme-neon',
-    title: 'Neon Theme',
-    description: 'Stand out with this vibrant neon theme',
-    price: 60,
-    type: 'theme',
-    iconUrl: '🌈',
-    isPurchased: false,
-    isLocked: false,
-  }
-];
 
 export const StoreProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [storeItems, setStoreItems] = useState<StoreItem[]>([]);
@@ -145,14 +31,10 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   const loadStoreData = () => {
     setLoadingStore(true);
     try {
-      // Get store items or initialize defaults
-      let items = getStoreItems();
-      if (items.length === 0) {
-        items = defaultStoreItems;
-        saveStoreItems(items);
-      }
+      // Initialize or get store items
+      const items = initializeStoreItems();
 
-      // Get purchased items
+      // Get purchased items for this user
       const purchased = getPurchasedItems().filter(item => item.userId === user?.id);
 
       // Update store items with purchase status
@@ -160,7 +42,7 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         const isPurchased = purchased.some(p => p.itemId === item.id);
         const isLocked = item.isLocked && 
           item.unlockRequirement && 
-          !checkUnlockRequirement(item.unlockRequirement);
+          !checkUnlockRequirement(item.unlockRequirement, user);
 
         return {
           ...item,
@@ -180,21 +62,6 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       });
     } finally {
       setLoadingStore(false);
-    }
-  };
-
-  const checkUnlockRequirement = (requirement: { type: string; value: number }) => {
-    if (!user) return false;
-
-    switch (requirement.type) {
-      case 'level':
-        return user.level >= requirement.value;
-      case 'badges':
-        return user.badges.filter(b => b.unlockedAt !== null).length >= requirement.value;
-      case 'tasks':
-        return user.completedTasks >= requirement.value;
-      default:
-        return false;
     }
   };
 
@@ -350,8 +217,8 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 
   const initializeStore = () => {
     if (storeItems.length === 0) {
-      saveStoreItems(defaultStoreItems);
-      setStoreItems(defaultStoreItems);
+      const defaultItems = initializeStoreItems();
+      setStoreItems(defaultItems);
     }
   };
 
