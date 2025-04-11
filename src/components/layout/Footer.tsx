@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Award, List, Trophy } from 'lucide-react';
+import { Home, Award, List, Trophy, ShoppingCart } from 'lucide-react';
 
 const Footer: React.FC = () => {
   const location = useLocation();
@@ -35,6 +35,10 @@ const Footer: React.FC = () => {
           <Link to="/leaderboard" className={getLinkClass('/leaderboard')}>
             <Trophy className="h-5 w-5" />
             <span className="text-xs mt-1">Ranks</span>
+          </Link>
+          <Link to="/store" className={getLinkClass('/store')}>
+            <ShoppingCart className="h-5 w-5" />
+            <span className="text-xs mt-1">Store</span>
           </Link>
         </div>
       </div>

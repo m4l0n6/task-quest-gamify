@@ -65,3 +65,26 @@ export interface DailyTask {
   completedAt: string | null;
   expiresAt: string;
 }
+
+export interface StoreItem {
+  id: string;
+  title: string;
+  description: string;
+  price: number;
+  type: 'theme' | 'avatar' | 'badge' | 'feature';
+  iconUrl: string;
+  isPurchased: boolean;
+  isLocked: boolean;
+  unlockRequirement?: {
+    type: 'level' | 'badges' | 'tasks';
+    value: number;
+  };
+}
+
+export interface PurchasedItem {
+  id: string;
+  itemId: string;
+  userId: string;
+  purchasedAt: string;
+  isActive: boolean;
+}
