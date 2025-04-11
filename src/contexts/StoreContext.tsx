@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { StoreItem, PurchasedItem } from '@/types';
@@ -332,7 +331,7 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       }
 
       toast({
-        title: item?.isActive ? 'Item Deactivated' : 'Item Activated',
+        title: purchasedItem.isActive ? 'Item Deactivated' : 'Item Activated',
         description: `${item?.title || 'Item'} has been ${purchasedItem.isActive ? 'deactivated' : 'activated'}`,
         variant: 'default',
       });

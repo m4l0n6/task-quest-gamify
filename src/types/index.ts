@@ -1,4 +1,3 @@
-
 export interface User {
   id: string;
   username: string;
@@ -75,6 +74,7 @@ export interface StoreItem {
   iconUrl: string;
   isPurchased: boolean;
   isLocked: boolean;
+  isActive?: boolean;
   unlockRequirement?: {
     type: 'level' | 'badges' | 'tasks';
     value: number;
