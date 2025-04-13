@@ -11,13 +11,19 @@ const ThemeToggle: React.FC = () => {
   const { activateItem } = useStore();
 
   const handleToggleTheme = (value: string) => {
-    // Only process if a valid theme is selected and it's different from current theme
-    if (value && value !== theme) {
+    // Only process if a valid theme is selected
+    if (value) {
       setTheme(value as 'light' | 'dark');
       
-      // Activate the dark theme in the store if changing to dark
-      if (value === 'dark' && isDarkThemePurchased) {
-        activateItem('theme-dark');
+      // Update the store item activation state based on the theme
+      if (isDarkThemePurchased) {
+        // When changing to dark theme, activate it; when changing to light, deactivate it
+        if (value === 'dark') {
+          activateItem('theme-dark');
+        } else {
+          // For light theme, we still need to call activateItem to properly toggle it off
+          activateItem('theme-dark');
+        }
       }
     }
   };

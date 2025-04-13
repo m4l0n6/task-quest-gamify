@@ -18,7 +18,7 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   const [isDarkThemePurchased, setIsDarkThemePurchased] = useState(false);
   const { purchasedItems, storeItems } = useStore();
 
-  // Check if the dark theme has been purchased
+  // Check if the dark theme has been purchased and set initial theme
   useEffect(() => {
     const darkTheme = storeItems.find(item => item.id === 'theme-dark');
     const isDarkThemePurchased = darkTheme?.isPurchased || false;
@@ -28,16 +28,22 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     const darkThemePurchase = purchasedItems.find(item => item.itemId === 'theme-dark');
     if (darkThemePurchase?.isActive) {
       setTheme('dark');
+    } else {
+      setTheme('light');
     }
   }, [purchasedItems, storeItems]);
 
   // Update the document class when theme changes
   useEffect(() => {
     const root = window.document.documentElement;
+    
+    // Apply theme class to root element
     if (theme === 'dark') {
       root.classList.add('dark');
+      console.log('Dark theme applied');
     } else {
       root.classList.remove('dark');
+      console.log('Light theme applied');
     }
   }, [theme]);
 
