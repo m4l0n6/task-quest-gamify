@@ -21,8 +21,8 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   // Check if the dark theme has been purchased and set initial theme
   useEffect(() => {
     const darkTheme = storeItems.find(item => item.id === 'theme-dark');
-    const isDarkThemePurchased = darkTheme?.isPurchased || false;
-    setIsDarkThemePurchased(isDarkThemePurchased);
+    const isDarkThemeOwned = darkTheme?.isPurchased || false;
+    setIsDarkThemePurchased(isDarkThemeOwned);
 
     // If the theme is purchased and active, set it as the current theme
     const darkThemePurchase = purchasedItems.find(item => item.itemId === 'theme-dark');
