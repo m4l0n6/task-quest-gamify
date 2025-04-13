@@ -21,7 +21,7 @@ const ThemeToggle: React.FC = () => {
         if (value === 'dark') {
           activateItem('theme-dark');
         } else {
-          // For light theme, we still need to call activateItem to properly toggle it off
+          // For light theme, we need to deactivate the dark theme
           activateItem('theme-dark');
         }
       }
