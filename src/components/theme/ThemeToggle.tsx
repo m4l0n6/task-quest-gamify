@@ -2,40 +2,17 @@
 import React from 'react';
 import { Moon, Sun } from 'lucide-react';
 import { useTheme } from '@/contexts/ThemeContext';
-import { Button } from '@/components/ui/button';
-import { useStore } from '@/contexts/StoreContext';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 
 const ThemeToggle: React.FC = () => {
   const { theme, setTheme, isDarkThemePurchased } = useTheme();
-  const { activateItem, purchasedItems } = useStore();
 
   const handleToggleTheme = (value: string) => {
-    // Only process if a valid theme is selected
     if (value) {
-      // Set the theme in ThemeContext
       setTheme(value as 'light' | 'dark');
-      
-      // Find the dark theme purchase
-      const darkThemePurchase = purchasedItems.find(item => item.itemId === 'theme-dark');
-      
-      // Update the store item activation state based on the theme
-      if (isDarkThemePurchased && darkThemePurchase) {
-        // When changing to dark theme, activate it; when changing to light, deactivate it
-        if (value === 'dark') {
-          if (!darkThemePurchase.isActive) {
-            activateItem('theme-dark');
-          }
-        } else {
-          if (darkThemePurchase.isActive) {
-            activateItem('theme-dark'); // This will toggle it off
-          }
-        }
-      }
     }
   };
 
-  // Only render if the dark theme has been purchased
   if (!isDarkThemePurchased) return null;
 
   return (
