@@ -1,10 +1,11 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User } from '@/types';
-import { mockTelegramLogin, initializeTelegramApi } from '@/utils/telegramMock';
 import { getUser } from '@/utils/storage';
 import { toast } from '@/hooks/use-toast';
 import { processDailyLogin, refreshDailyTasksIfNeeded } from '@/utils/gamification';
+import { initializeTelegram, authenticateTelegram, isRunningInTelegram } from '@/services/telegramService';
+import { mockTelegramLogin } from '@/utils/telegramMock'; // Giữ lại để sử dụng trong môi trường phát triển
 
 interface AuthContextType {
   user: User | null;
@@ -22,13 +23,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Initialize telegram API mock
-    initializeTelegramApi();
+    // Khởi tạo Telegram API
+    initializeTelegram();
     
-    // Check if user is already logged in
+    // Kiểm tra xem người dùng đã đăng nhập chưa
     const storedUser = getUser();
     if (storedUser) {
-      // If tokens field doesn't exist, initialize it
+      // Nếu trường tokens không tồn tại, khởi tạo nó
       if (storedUser.tokens === undefined) {
         storedUser.tokens = 0;
         storedUser.lastDailyLogin = null;
@@ -37,7 +38,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       
       setUser(storedUser);
       
-      // Process daily login rewards
+      // Xử lý phần thưởng đăng nhập hàng ngày
       try {
         const { isFirstLogin, tokensAwarded, currentStreak } = processDailyLogin();
         
@@ -48,7 +49,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           });
         }
         
-        // Refresh daily tasks if needed
+        // Làm mới nhiệm vụ hàng ngày nếu cần
         refreshDailyTasksIfNeeded();
       } catch (err) {
         console.error("Error processing daily login:", err);
@@ -62,11 +63,19 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setIsLoading(true);
       setError(null);
       
-      // In a real app, this would verify the Telegram auth data
-      // For now, we'll use our mock
-      const loggedInUser = await mockTelegramLogin();
+      let loggedInUser: User;
       
-      // Initialize tokens if not present
+      // Kiểm tra xem ứng dụng có đang chạy trong Telegram không
+      if (isRunningInTelegram()) {
+        // Xác thực với Telegram thực
+        loggedInUser = await authenticateTelegram();
+      } else {
+        // Sử dụng mock cho môi trường phát triển
+        console.warn('Using mock Telegram login for development');
+        loggedInUser = await mockTelegramLogin();
+      }
+      
+      // Khởi tạo tokens nếu không có
       if (loggedInUser.tokens === undefined) {
         loggedInUser.tokens = 0;
         loggedInUser.lastDailyLogin = null;
@@ -75,7 +84,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       
       setUser(loggedInUser);
       
-      // Process daily login rewards and refresh tasks
+      // Xử lý phần thưởng đăng nhập hàng ngày và làm mới nhiệm vụ
       try {
         const { isFirstLogin, tokensAwarded, currentStreak } = processDailyLogin();
         
@@ -86,7 +95,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           });
         }
         
-        // Refresh daily tasks if needed
+        // Làm mới nhiệm vụ hàng ngày nếu cần
         refreshDailyTasksIfNeeded();
       } catch (err) {
         console.error("Error processing daily login:", err);
@@ -110,9 +119,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const logout = (): void => {
+    // Lưu ý: Trong Mini App Telegram thực, chúng ta thường không đăng xuất người dùng
+    // vì xác thực được xử lý bởi Telegram
     setUser(null);
-    // Note: In a real Telegram Mini App, we wouldn't actually logout the user
-    // since authentication is handled by Telegram, but we'll keep this for demo purposes
     
     toast({
       title: "Logged Out",
