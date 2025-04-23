@@ -71,7 +71,22 @@ export const getTelegramUser = (): TelegramAuthData | null => {
     return null;
   }
   
-  return window.Telegram.WebApp.initDataUnsafe.user || null;
+  const user = window.Telegram.WebApp.initDataUnsafe.user;
+  if (!user) {
+    return null;
+  }
+  
+  // Đảm bảo trả về đúng định dạng TelegramAuthData
+  // Sử dụng các giá trị từ initDataUnsafe nếu có
+  return {
+    id: user.id,
+    auth_date: window.Telegram.WebApp.initDataUnsafe.auth_date || Math.floor(Date.now() / 1000),
+    hash: window.Telegram.WebApp.initDataUnsafe.hash || '',
+    first_name: user.first_name,
+    last_name: user.last_name,
+    username: user.username,
+    photo_url: user.photo_url
+  };
 };
 
 // Kiểm tra xem app có đang chạy trong Telegram hay không
