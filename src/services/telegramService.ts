@@ -52,29 +52,39 @@ export const authenticateTelegram = async (): Promise<User> => {
       throw new Error(msg);
     }
 
-    // Gọi API xác thực
+    // Gọi API xác thực với thêm chi tiết lỗi
     console.log('Calling authentication API endpoint...');
-    const response = await api.post('/auth/telegram', { initData });
-    
-    console.log('Authentication response received:', response.data);
-    
-    if (!response.data.user) {
-      const msg = 'Authentication failed: User data not found in response';
-      console.error(msg, response.data);
-      throw new Error(msg);
-    }
+    try {
+      const response = await api.post('/auth/telegram', { initData });
+      console.log('Authentication response received:', response.data);
+      
+      if (!response.data.user) {
+        const msg = 'Authentication failed: User data not found in response';
+        console.error(msg, response.data);
+        throw new Error(msg);
+      }
 
-    // Lưu thông tin user
-    const userData = response.data.user;
-    console.log('Saving user data:', userData);
-    saveUser(userData);
-    
-    toast({
-      title: "Đăng nhập thành công",
-      description: `Chào mừng ${userData.username || userData.first_name} đến với EpicTasks!`,
-    });
-    
-    return userData;
+      // Lưu thông tin user
+      const userData = response.data.user;
+      console.log('Saving user data:', userData);
+      saveUser(userData);
+      
+      toast({
+        title: "Đăng nhập thành công",
+        description: `Chào mừng ${userData.username || userData.first_name} đến với EpicTasks!`,
+      });
+      
+      return userData;
+    } catch (apiError) {
+      console.error('API call failed:', apiError);
+      // Hiển thị thêm thông tin về lỗi API
+      if (apiError.response) {
+        console.error('Error response:', apiError.response.status, apiError.response.data);
+      } else if (apiError.request) {
+        console.error('No response received:', apiError.request);
+      }
+      throw apiError;
+    }
   } catch (error) {
     console.error('Telegram authentication failed:', error);
     const errorMsg = error instanceof Error ? error.message : 'Authentication failed';

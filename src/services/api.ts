@@ -10,7 +10,7 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  withCredentials: true, // Allow cookies to be sent with requests
+  withCredentials: false, // Change to false for development testing
 });
 
 // Interceptor để xử lý lỗi
