@@ -1,9 +1,8 @@
 
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:3000/api/v1'; // Thay đổi URL này thành backend thực của bạn
+const BASE_URL = 'https://epictask-telegram-mini-app-api.vercel.app/api'; // URL của backend thực
 
-// Khởi tạo axios instance với cấu hình cơ bản
 const api = axios.create({
   baseURL: BASE_URL,
   headers: {
@@ -19,5 +18,14 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+// Thêm interceptor để tự động thêm initData vào header nếu có
+api.interceptors.request.use((config) => {
+  const tg = window.Telegram?.WebApp;
+  if (tg) {
+    config.headers['Telegram-Data'] = tg.initData;
+  }
+  return config;
+});
 
 export default api;

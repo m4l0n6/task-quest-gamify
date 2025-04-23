@@ -14,7 +14,6 @@ interface TelegramAuthData {
 }
 
 export const initializeTelegram = (): void => {
-  // Thêm script Telegram Web App nếu chưa được thêm
   if (!window.Telegram) {
     const script = document.createElement('script');
     script.src = 'https://telegram.org/js/telegram-web-app.js';
@@ -23,38 +22,26 @@ export const initializeTelegram = (): void => {
   }
 };
 
-// Xác thực người dùng Telegram
 export const authenticateTelegram = async (): Promise<User> => {
   try {
-    // Kiểm tra xem Telegram WebApp đã được khởi tạo chưa
     if (!window.Telegram || !window.Telegram.WebApp) {
       throw new Error('Telegram WebApp is not initialized');
     }
-    
-    // Lấy initData từ Telegram WebApp
+
     const initData = window.Telegram.WebApp.initData;
     
     if (!initData) {
       throw new Error('No Telegram init data available');
     }
-    
-    // Lấy thông tin người dùng từ local storage nếu đã xác thực trước đó
-    const existingUser = getUser();
-    if (existingUser) {
-      // Cập nhật thời gian đăng nhập gần nhất
-      existingUser.lastLoginAt = new Date().toISOString();
-      saveUser(existingUser);
-      return existingUser;
-    }
-    
-    // Gọi API để xác thực người dùng
+
+    // Gọi API xác thực
     const response = await api.post('/auth/telegram', { initData });
     
-    if (!response.data.success) {
+    if (!response.data.user) {
       throw new Error('Authentication failed');
     }
-    
-    // Lưu thông tin người dùng vào local storage
+
+    // Lưu thông tin user
     const userData = response.data.user;
     saveUser(userData);
     
@@ -65,31 +52,28 @@ export const authenticateTelegram = async (): Promise<User> => {
   }
 };
 
-// Lấy thông tin người dùng từ Telegram
 export const getTelegramUser = (): TelegramAuthData | null => {
-  if (!window.Telegram || !window.Telegram.WebApp || !window.Telegram.WebApp.initDataUnsafe) {
+  if (!window.Telegram?.WebApp?.initDataUnsafe) {
     return null;
   }
   
-  const user = window.Telegram.WebApp.initDataUnsafe.user;
+  const { user, auth_date, hash } = window.Telegram.WebApp.initDataUnsafe;
+  
   if (!user) {
     return null;
   }
   
-  // Đảm bảo trả về đúng định dạng TelegramAuthData
-  // Sử dụng các giá trị từ initDataUnsafe nếu có
   return {
     id: user.id,
-    auth_date: window.Telegram.WebApp.initDataUnsafe.auth_date || Math.floor(Date.now() / 1000),
-    hash: window.Telegram.WebApp.initDataUnsafe.hash || '',
     first_name: user.first_name,
     last_name: user.last_name,
     username: user.username,
-    photo_url: user.photo_url
+    photo_url: user.photo_url,
+    auth_date,
+    hash
   };
 };
 
-// Kiểm tra xem app có đang chạy trong Telegram hay không
 export const isRunningInTelegram = (): boolean => {
   return !!window.Telegram && !!window.Telegram.WebApp;
 };
