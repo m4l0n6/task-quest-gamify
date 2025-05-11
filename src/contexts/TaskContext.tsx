@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { Task } from '@/types';
@@ -13,7 +12,7 @@ interface TaskContextType {
   addTask: (taskData: Omit<Task, 'id' | 'completed' | 'createdAt' | 'completedAt' | 'userId' | 'tokenReward'>) => void;
   updateTask: (taskId: string, taskData: Partial<Task>) => void;
   deleteTask: (taskId: string) => void;
-  markTaskComplete: (taskId: string) => void;
+  markTaskComplete: (taskId: string) => Promise<void>;
   getTodayTasksCount: () => number;
   getCompletedTasksCount: () => number;
 }
@@ -193,11 +192,22 @@ export const TaskProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  const markTaskComplete = (taskId: string) => {
+  const markTaskComplete = async (taskId: string): Promise<void> => {
     try {
-      const { task, xpGained, tokenGained, leveledUp } = completeTask(taskId);
+      const taskIndex = tasks.findIndex(t => t.id === taskId);
+      if (taskIndex === -1) {
+        throw new Error("Task not found");
+      }
       
-      // Update local task state
+      // Kiểm tra nếu task đã hoàn thành thì không xử lý
+      if (tasks[taskIndex].completed) {
+        console.log("Task already completed, nothing to do");
+        return;
+      }
+      
+      const { task: updatedTask, xpGained, tokenGained, leveledUp } = completeTask(taskId);
+      
+      // Cập nhật trạng thái ngay lập tức
       setTasks(prevTasks => 
         prevTasks.map(t => 
           t.id === taskId 
@@ -206,14 +216,14 @@ export const TaskProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         )
       );
       
-      // Show toast with animation
+      // Hiển thị toast thông báo
       toast({
         title: "Task Completed!",
         description: `You earned ${xpGained} XP and ${tokenGained} tokens${leveledUp ? " and leveled up!" : "!"}`,
         variant: "default",
       });
       
-      // Force reload tasks to ensure sync with storage
+      // Tải lại dữ liệu để đảm bảo đồng bộ với storage
       loadTasks();
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Failed to complete the task.";
@@ -222,6 +232,7 @@ export const TaskProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         description: errorMessage,
         variant: "destructive",
       });
+      throw error;
     }
   };
   

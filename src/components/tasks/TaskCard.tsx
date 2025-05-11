@@ -17,8 +17,12 @@ interface TaskCardProps {
 const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit }) => {
   const { deleteTask, markTaskComplete } = useTask();
   
-  const handleComplete = () => {
-    markTaskComplete(task.id);
+  const handleComplete = async () => {
+    try {
+      await markTaskComplete(task.id);
+    } catch (error) {
+      console.error('Failed to complete task:', error);
+    }
   };
   
   const handleDelete = () => {
@@ -146,6 +150,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit }) => {
               size="sm" 
               className="flex-1 bg-epic-green hover:bg-epic-green/90 animate-pulse-scale"
               onClick={handleComplete}
+              disabled={task.completed}
             >
               <CheckCircle2 className="h-4 w-4 mr-1" />
               Complete

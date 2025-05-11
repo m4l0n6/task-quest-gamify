@@ -111,6 +111,9 @@ export const completeTask = (taskId: string): { task: Task, xpGained: number, to
   tasks[taskIndex].completed = true;
   tasks[taskIndex].completedAt = new Date().toISOString();
   
+  // Lưu tasks đã cập nhật
+  saveTasks(tasks);
+  
   // Update completed tasks count
   user.completedTasks += 1;
   saveUser(user);
