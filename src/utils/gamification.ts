@@ -1,6 +1,6 @@
 import { User, Task, Badge, Notification, DailyTask } from '@/types';
 import { v4 as uuidv4 } from 'uuid';
-import { getUser, saveUser, addNotification, unlockBadge, getBadges, getTasks, saveDailyTasks, getDailyTasks } from './storage';
+import { getUser, saveUser, addNotification, unlockBadge, getBadges, getTasks, saveTasks, saveDailyTasks, getDailyTasks } from './storage';
 import { addDays, isSameDay, startOfDay } from 'date-fns';
 
 // XP required for each level
